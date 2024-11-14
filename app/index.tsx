@@ -11,6 +11,7 @@ export default function Index() {
       }}
     >
       <Text>Edit app/index.tsx to edit this screen.</Text>
+      <Text>Hello World</Text>
       <Link href="/about" style={styles.button}>
         Go to About screen
       </Link>
@@ -33,6 +34,5 @@ const styles = StyleSheet.create({
   button: {
     fontSize: 20,
     textDecorationLine: 'underline',
-    color: '#fff',
   },
 });
