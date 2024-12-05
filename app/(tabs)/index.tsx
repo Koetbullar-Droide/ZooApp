@@ -1,15 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import {NavigationActions} from "react-navigation";
+import navigate = NavigationActions.navigate;
+import {router} from "expo-router";
 
-export default function MapScreenWeb({ navigation }) {
+export default function MapScreenWeb() {
   const mapContainerStyle = {
     width: '100%',
     height: '100%',
   };
 
   const center = {
-    lat: 47.3769, 
+    lat: 47.3769,
     lng: 8.5417,
   };
 
@@ -39,9 +42,7 @@ export default function MapScreenWeb({ navigation }) {
                 position={marker.position}
                 title={marker.title}
                 onClick={() =>
-                  navigation.navigate('Booking', {
-                    location: marker.title, // Übergibt den Namen des markierten Ortes
-                  })
+                  router.navigate('sites/Booking/')
                 }
               />
             ))}

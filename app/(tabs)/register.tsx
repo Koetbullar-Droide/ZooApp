@@ -12,7 +12,7 @@ export default function ContactScreen() {
         <View style={styles.inputGroup}>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Vorname</Text>
-            <TextInput style={styles.input} placeholder="Heidi" defaultValue="Heidi" />
+            <TextInput style={styles.input} placeholder="Vorname"/>
           </View>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Name</Text>
@@ -20,11 +20,11 @@ export default function ContactScreen() {
           </View>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Email</Text>
-            <TextInput style={styles.input} placeholder="Heidi@Email.ch" defaultValue="Heidi@Email.ch" keyboardType="email-address" />
+            <TextInput style={styles.input} placeholder="Email" keyboardType="email-address" />
           </View>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Passwort</Text>
-            <TextInput style={styles.input} placeholder="********" secureTextEntry={true} defaultValue="********" />
+            <TextInput style={styles.input} placeholder="Passwort" secureTextEntry={true}/>
           </View>
         </View>
       </ScrollView>
