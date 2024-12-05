@@ -42,7 +42,7 @@ export default function MapScreenWeb() {
                 position={marker.position}
                 title={marker.title}
                 onClick={() =>
-                  router.navigate('sites/Booking/')
+                  router.navigate('sites/booking/')
                 }
               />
             ))}
