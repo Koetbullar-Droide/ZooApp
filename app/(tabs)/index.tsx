@@ -1,74 +1,77 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function MapScreenWeb({ navigation }) {
+  const mapContainerStyle = {
+    width: '100%',
+    height: '100%',
+  };
 
-export default function HomeScreen() {
+  const center = {
+    lat: 47.3769, 
+    lng: 8.5417,
+  };
+
+  const markers = [
+    { id: 1, title: 'Löwen Gehege', position: { lat: 47.3769, lng: 8.5417 } },
+    { id: 2, title: 'Elefanten Gehege', position: { lat: 47.3765, lng: 8.5455 } },
+    { id: 3, title: 'Pinguine', position: { lat: 47.378, lng: 8.5435 } },
+  ];
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.link} onPress={() => alert('Reservationen')}>
+          Reservationen
+        </Text>
+        <Text style={styles.title}>Standort</Text>
+        <Text style={styles.link} onPress={() => alert('Logout')}>
+          Logout
+        </Text>
+      </View>
+      <View style={styles.mapContainer}>
+        <LoadScript googleMapsApiKey="AIzaSyB_tp1m0zJnVQRrcc0PcZS6rl8fdFQhPEs">
+          <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={16}>
+            {markers.map(marker => (
+              <Marker
+                key={marker.id}
+                position={marker.position}
+                title={marker.title}
+                onClick={() =>
+                  navigation.navigate('Booking', {
+                    location: marker.title, // Übergibt den Namen des markierten Ortes
+                  })
+                }
+              />
+            ))}
+          </GoogleMap>
+        </LoadScript>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+  },
+  header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 15,
+    backgroundColor: '#FFF',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  link: {
+    color: '#007AFF',
+    fontSize: 16,
+  },
+  mapContainer: {
+    flex: 1,
   },
 });
