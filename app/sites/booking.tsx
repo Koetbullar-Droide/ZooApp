@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import {format} from "date-fns";
 
 export default function BookingScreen() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
+  const currentYear = new Date().getFullYear();
 
   return (
     <View style={styles.container}>
@@ -18,13 +20,16 @@ export default function BookingScreen() {
       </View>
       <View style={styles.bookingContainer}>
         <Text style={styles.calendarHeader}>
-          {selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+          {selectedDate ? format(selectedDate, 'MM yyyy') : 'No Date Selected'}
         </Text>
         <DatePicker
-          inline
-          selected={selectedDate}
-          onChange={(date) => setSelectedDate(date)}
-          calendarClassName="custom-calendar"
+            inline
+            selected={selectedDate}
+            onChange={(date: Date | null) => setSelectedDate(date)}
+            calendarClassName="custom-calendar"
+            showMonthYearDropdown={true}
+            minDate={new Date(currentYear-1+"-01-01")}
+            maxDate={new Date(currentYear+1+"-12-31")}
         />
         <View style={styles.inputGroup}>
           <View style={styles.inputContainer}>
@@ -48,15 +53,15 @@ export default function BookingScreen() {
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Datum</Text>
             <TextInput
-              style={styles.input}
-              value={selectedDate.toLocaleDateString('de-DE')}
-              editable={false}
+                style={styles.input}
+                value={selectedDate ? selectedDate.toLocaleDateString('de-DE') : ''}
+                editable={false}
             />
           </View>
         </View>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => alert(`Buchung bestätigt für ${selectedDate.toLocaleDateString()} von ${startTime} bis ${endTime}`)}
+          onPress={() => alert(`Buchung bestätigt für ${selectedDate?.toLocaleDateString()} von ${startTime} bis ${endTime}`)}
         >
           <Text style={styles.buttonText}>Confirm</Text>
         </TouchableOpacity>
