@@ -1,7 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, Text, TextInput, View, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, Alert } from 'react-native';
+import { router } from 'expo-router';
 
 export default function ContactScreen() {
+  const handleRegister = () => {
+    Alert.alert('Registrierung erfolgreich!', 'Sie werden zur Startseite weitergeleitet.');
+    router.push('/'); // Leitet zur Index-Seite weiter
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -27,6 +33,9 @@ export default function ContactScreen() {
             <TextInput style={styles.input} placeholder="Passwort" secureTextEntry={true}/>
           </View>
         </View>
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
+          <Text style={styles.buttonText}>Registrieren</Text>
+        </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -72,5 +81,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderWidth: 1,
     borderColor: '#DDD',
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
