@@ -1,54 +1,35 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-import {NavigationActions} from "react-navigation";
-import navigate = NavigationActions.navigate;
-import {router} from "expo-router";
+import { View, Text, StyleSheet, Alert } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import { router } from 'expo-router';
 
-export default function MapScreenWeb() {
-  const mapContainerStyle = {
-    width: '100%',
-    height: '100%',
-  };
-
-  const center = {
-    lat: 47.3769,
-    lng: 8.5417,
-  };
-
+export default function MapScreen() {
   const markers = [
-    { id: 1, title: 'Löwen Gehege', position: { lat: 47.3769, lng: 8.5417 } },
-    { id: 2, title: 'Elefanten Gehege', position: { lat: 47.3765, lng: 8.5455 } },
-    { id: 3, title: 'Pinguine', position: { lat: 47.378, lng: 8.5435 } },
+    { id: 1, title: 'Löwen Gehege', coordinate: { latitude: 47.3769, longitude: 8.5417 } },
+    { id: 2, title: 'Elefanten Gehege', coordinate: { latitude: 47.3765, longitude: 8.5455 } },
+    { id: 3, title: 'Pinguine', coordinate: { latitude: 47.378, longitude: 8.5435 } },
   ];
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.link} onPress={() => alert('Reservationen')}>
-          Reservationen
-        </Text>
-        <Text style={styles.title}>Standort</Text>
-        <Text style={styles.link} onPress={() => alert('Logout')}>
-          Logout
-        </Text>
-      </View>
-      <View style={styles.mapContainer}>
-        <LoadScript googleMapsApiKey="AIzaSyB_tp1m0zJnVQRrcc0PcZS6rl8fdFQhPEs">
-          <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={16}>
-            {markers.map(marker => (
-              <Marker
-                key={marker.id}
-                position={marker.position}
-                title={marker.title}
-                onClick={() =>
-                  router.navigate('sites/booking/')
-                }
-              />
-            ))}
-          </GoogleMap>
-        </LoadScript>
-      </View>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 47.3769,
+          longitude: 8.5417,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
+      >
+        {markers.map(marker => (
+          <Marker
+            key={marker.id}
+            coordinate={marker.coordinate}
+            title={marker.title}
+            onPress={() => router.navigate('sites/booking/')}
+          />
+        ))}
+      </MapView>
     </View>
   );
 }
@@ -72,7 +53,7 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontSize: 16,
   },
-  mapContainer: {
+  map: {
     flex: 1,
   },
 });
