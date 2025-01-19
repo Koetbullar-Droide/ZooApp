@@ -1,72 +1,95 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import {format} from "date-fns";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import {ReservationsService, Reservation} from "@/components/reservationsService";
+import Reservations from "@/app/(tabs)/reservations";
+import {router} from "expo-router";
 
 export default function BookingScreen() {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
-  const currentYear = new Date().getFullYear();
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const reservationsService = new ReservationsService();
+
+  const onChangeDate = (event, date) => {
+    setShowDatePicker(false);
+    if (date) {
+      setSelectedDate(date);
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.link} onPress={() => alert('Zurück zur Karte')}>
-          Standort
-        </Text>
-        <Text style={styles.title}>Datum</Text>
-      </View>
-      <View style={styles.bookingContainer}>
-        <Text style={styles.calendarHeader}>
-          {selectedDate ? format(selectedDate, 'MM yyyy') : 'No Date Selected'}
-        </Text>
-        <DatePicker
-            inline
-            selected={selectedDate}
-            onChange={(date: Date | null) => setSelectedDate(date)}
-            calendarClassName="custom-calendar"
-            showMonthYearDropdown={true}
-            minDate={new Date(currentYear-1+"-01-01")}
-            maxDate={new Date(currentYear+1+"-12-31")}
-        />
-        <View style={styles.inputGroup}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Von</Text>
-            <TextInput
-              style={styles.input}
-              value={startTime}
-              onChangeText={setStartTime}
-              placeholder="HH:MM"
-            />
+      <View style={styles.container}>
+        <View style={styles.bookingContainer}>
+          <Text style={styles.calendarHeader}>
+            {selectedDate.toLocaleDateString('de-DE')}
+          </Text>
+
+          <TouchableOpacity
+              style={styles.datePickerButton}
+              onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={styles.buttonText}>Pick a Date</Text>
+          </TouchableOpacity>
+
+          {showDatePicker && (
+              <DateTimePicker
+                  value={selectedDate}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                  onChange={onChangeDate}
+              />
+          )}
+
+          <View style={styles.inputGroup}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Von</Text>
+              <TextInput
+                  style={styles.input}
+                  value={startTime}
+                  onChangeText={setStartTime}
+                  placeholder="HH:MM"
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Bis</Text>
+              <TextInput
+                  style={styles.input}
+                  value={endTime}
+                  onChangeText={setEndTime}
+                  placeholder="HH:MM"
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Datum</Text>
+              <TextInput
+                  style={styles.input}
+                  value={selectedDate.toLocaleDateString('de-DE')}
+                  editable={false}
+              />
+            </View>
           </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Bis</Text>
-            <TextInput
-              style={styles.input}
-              value={endTime}
-              onChangeText={setEndTime}
-              placeholder="HH:MM"
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Datum</Text>
-            <TextInput
-                style={styles.input}
-                value={selectedDate ? selectedDate.toLocaleDateString('de-DE') : ''}
-                editable={false}
-            />
-          </View>
+
+          <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                // Create a Reservation object
+                const newReservation: Reservation = {
+                  date: selectedDate.toLocaleDateString("de-DE"),
+                  startTime: startTime,
+                  endTime: endTime,
+                };
+
+                reservationsService.saveArray(newReservation);
+                router.back()
+              }}
+
+          >
+            <Text style={styles.buttonText}>Confirm</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => alert(`Buchung bestätigt für ${selectedDate?.toLocaleDateString()} von ${startTime} bis ${endTime}`)}
-        >
-          <Text style={styles.buttonText}>Confirm</Text>
-        </TouchableOpacity>
       </View>
-    </View>
   );
 }
 
@@ -76,23 +99,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     paddingTop: 40,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 15,
-    paddingBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#DDD',
-    backgroundColor: '#FFF',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  link: {
-    color: '#007AFF',
-    fontSize: 16,
-  },
   bookingContainer: {
     flex: 1,
     paddingHorizontal: 20,
@@ -100,13 +106,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 10,
     margin: 20,
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
   calendarHeader: {
     textAlign: 'center',
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
+  },
+  datePickerButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 15,
   },
   inputGroup: {
     marginTop: 20,
@@ -131,8 +147,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
     paddingVertical: 15,
     borderRadius: 5,
-    marginTop: 20,
     alignItems: 'center',
+    marginTop: 20,
   },
   buttonText: {
     color: '#FFF',
