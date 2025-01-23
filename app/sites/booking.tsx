@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {ReservationsService, Reservation} from "@/components/reservationsService";
-import Reservations from "@/app/(tabs)/reservations";
 import {router} from "expo-router";
 
 export default function BookingScreen() {
@@ -12,7 +11,8 @@ export default function BookingScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const reservationsService = new ReservationsService();
 
-  const onChangeDate = (event, date) => {
+  // @ts-ignore
+  const onChangeDate = (date) => {
     setShowDatePicker(false);
     if (date) {
       setSelectedDate(date);
@@ -67,6 +67,19 @@ export default function BookingScreen() {
                   style={styles.input}
                   value={selectedDate.toLocaleDateString('de-DE')}
                   editable={false}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Vorname</Text>
+              <TextInput
+                  style={styles.input}
+
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Name</Text>
+              <TextInput
+                  style={styles.input}
               />
             </View>
           </View>
