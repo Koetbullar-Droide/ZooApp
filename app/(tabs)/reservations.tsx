@@ -1,24 +1,20 @@
-// Reservations.tsx
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
-import {Reservation, ReservationsService} from "@/components/reservationsService";
+import { Reservation, ReservationsService } from "@/components/reservationsService";
 
 const Reservations: React.FC = () => {
-    const reservationsService = new ReservationsService()
     const [reservations, setReservations] = useState<Reservation[]>([]);
 
-    // Fetch reservations from the service when the component mounts
     useEffect(() => {
-        const fetchedReservations = reservationsService.getArray();
+        const fetchedReservations = ReservationsService.getInstance().getArray();
         setReservations(fetchedReservations);
     }, []);
 
-    // Render each reservation item
     const renderReservation = ({ item }: { item: Reservation }) => (
         <View style={styles.reservationItem}>
-            <Text style={styles.date}>Date: {item.date}</Text>
+            <Text style={styles.date}>Datum: {item.date}</Text>
             <Text style={styles.time}>
-                Time: {item.startTime} - {item.endTime}
+                Zeit: {item.startTime} - {item.endTime}, Ort: {item.location}
             </Text>
         </View>
     );
@@ -41,7 +37,6 @@ const Reservations: React.FC = () => {
 
 export default Reservations;
 
-// Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -49,6 +44,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#F5F5F5",
     },
     title: {
+        marginTop: 30,
         fontSize: 24,
         fontWeight: "bold",
         marginBottom: 20,

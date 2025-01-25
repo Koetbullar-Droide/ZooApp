@@ -1,27 +1,58 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {ReservationsService, Reservation} from "@/components/reservationsService";
-import {router} from "expo-router";
+import { ReservationsService, Reservation } from "@/components/reservationsService";
+import {router, useLocalSearchParams, useNavigation} from "expo-router";
 
 export default function BookingScreen() {
+  let { pin } = useLocalSearchParams();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const reservationsService = new ReservationsService();
+  const reservationsService = ReservationsService.getInstance();
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const navigation = useNavigation();
 
-  // @ts-ignore
-  const onChangeDate = (date) => {
+  const onChangeDate = (event: any, date?: Date) => {
     setShowDatePicker(false);
     if (date) {
       setSelectedDate(date);
     }
   };
 
+  useEffect(() => {
+    navigation.setOptions({
+      title: pin || 'Booking',
+      headerLeft: () => (
+          <TouchableOpacity onPress={() => router.back()}>
+            <Text style={styles.link}>
+              Map
+            </Text>
+          </TouchableOpacity>
+      ),
+    });
+  }, [pin, navigation, router]);
+
+
+  const handleConfirm = () => {
+    const newReservation: Reservation = {
+      date: selectedDate.toLocaleDateString('de-DE'),
+      startTime: startTime,
+      endTime: endTime,
+      firstname: firstname,
+      lastname: lastname,
+      location: pin.toString(),
+    };
+
+    reservationsService.saveReservation(newReservation);
+    router.back();
+  };
+
   return (
       <View style={styles.container}>
-        <View style={styles.bookingContainer}>
+          <View style={styles.bookingContainer}>
           <Text style={styles.calendarHeader}>
             {selectedDate.toLocaleDateString('de-DE')}
           </Text>
@@ -73,31 +104,23 @@ export default function BookingScreen() {
               <Text style={styles.label}>Vorname</Text>
               <TextInput
                   style={styles.input}
-
+                  onChangeText={setFirstname}
+                  value={firstname}
               />
             </View>
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Name</Text>
               <TextInput
                   style={styles.input}
+                  onChangeText={setLastname}
+                  value={lastname}
               />
             </View>
           </View>
 
           <TouchableOpacity
               style={styles.button}
-              onPress={() => {
-                // Create a Reservation object
-                const newReservation: Reservation = {
-                  date: selectedDate.toLocaleDateString("de-DE"),
-                  startTime: startTime,
-                  endTime: endTime,
-                };
-
-                reservationsService.saveArray(newReservation);
-                router.back()
-              }}
-
+              onPress={handleConfirm}
           >
             <Text style={styles.buttonText}>Confirm</Text>
           </TouchableOpacity>
@@ -105,6 +128,7 @@ export default function BookingScreen() {
       </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -168,4 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  link: {
+    color: '#364be3'
+  }
 });

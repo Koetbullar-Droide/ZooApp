@@ -1,11 +1,21 @@
 export class ReservationsService {
-    reservations = [];
+    private static instance: ReservationsService;
+    private reservations: Reservation[] = [];
 
-    public saveArray(array: Reservation): void {
-        this.reservations.push(array)
+    private constructor() {} // Prevent direct instantiation
+
+    public static getInstance(): ReservationsService {
+        if (!ReservationsService.instance) {
+            ReservationsService.instance = new ReservationsService();
+        }
+        return ReservationsService.instance;
     }
 
-    public getArray(): [] {
+    public saveReservation(reservation: Reservation): void {
+        this.reservations.push(reservation);
+    }
+
+    public getArray(): Reservation[] {
         return this.reservations;
     }
 }
@@ -14,4 +24,7 @@ export interface Reservation {
     date: string;
     startTime: string;
     endTime: string;
+    firstname: string;
+    lastname: string;
+    location: string
 }
